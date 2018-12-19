@@ -54,7 +54,7 @@ density_plotter_function <- function(main_df,
   # create the plot 
   this_density_plot <- ggplot(data = subset(main_df, tumor_type==this_tumor), 
                               aes(x=gamma_epistasis)) + 
-    geom_density(aes(fill=synonymous),alpha=.5) + 
+    geom_density(aes(fill=synonymous,linetype=synonymous),alpha=.5) + 
     
     # first substitution 
     geom_point(data = sub_1_data, 
@@ -105,7 +105,7 @@ density_plotter_function <- function(main_df,
                        expand = c(0,0)) + 
     coord_cartesian(xlim = c(1,ifelse(minimum_maximum>max(data_for_this_tumor_recur$gamma_epistasis),minimum_maximum+(minimum_maximum*extender_percent),
                                       (max(data_for_this_tumor_recur$gamma_epistasis)+(max(data_for_this_tumor_recur$gamma_epistasis)*extender_percent))))) + 
-    guides(fill=FALSE)+
+    guides(fill=FALSE,linetype=FALSE)+
     scale_y_continuous(expand=c(0,0), 
                        limits=y_axis_limits,
                        breaks=y_axis_breaks,
@@ -808,7 +808,7 @@ save_plot(filename = "figures/UCEC_density.png",plot = UCEC_density,base_height 
 # legend
 legend_plot <- ggplot(data = subset(combined_all_data.noNA, tumor_type=="LUAD"), 
                       aes(x=gamma_epistasis)) + 
-  geom_density(aes(fill=synonymous),position = "stack") + scale_fill_discrete(name="Substitution\ntype",labels=c("Non-synonymous", "Synonymous")) + theme(legend.title=element_text(size=common.size) , legend.text=element_text(size=common.size))
+  geom_density(aes(fill=synonymous,linetype=synonymous),position = "stack") + scale_fill_discrete(name="Substitution\ntype",labels=c("Non-synonymous", "Synonymous")) + scale_linetype_discrete(name="Substitution\ntype",labels=c("Non-synonymous", "Synonymous")) + theme(legend.title=element_text(size=common.size) , legend.text=element_text(size=common.size))
 
 legend_for_plot <- get_legend(legend_plot)
 
