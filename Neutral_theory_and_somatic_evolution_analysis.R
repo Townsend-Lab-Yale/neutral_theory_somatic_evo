@@ -148,27 +148,30 @@ tail(miyata.melt)
 colnames(miyata.melt) <- c(colnames(miyata.melt)[1:5],"Tumor_type","Frequency")
 
 # Fill in the data from the selection analysis
-for(i in 1:nrow(miyata.melt)){
-  
-  if(miyata.melt$Tumor_type[i] != "Between species"){
-    miyata.melt$Frequency[i] <- sum(combined_all_data$freq[which(combined_all_data$tumor_type==miyata.melt$Tumor_type[i] & 
-                                                                   combined_all_data$AA_Ref== translations$AA_letter[which(translations$AA_short== miyata.melt$AA_Ref[i])[1]] & 
-                                                                   combined_all_data$AA_Change== translations$AA_letter[which(translations$AA_short== miyata.melt$AA_Change[i])[1]])],combined_all_data$freq[which(combined_all_data$tumor_type==miyata.melt$Tumor_type[i] & 
-                                                                                                                                                                                                                     combined_all_data$AA_Ref== translations$AA_letter[which(translations$AA_short== miyata.melt$AA_Change[i])[1]] & 
-                                                                                                                                                                                                                     combined_all_data$AA_Change== translations$AA_letter[which(translations$AA_short== miyata.melt$AA_Ref[i])[1]])])
-  }else{
-    if(miyata.melt$AA_Ref[i]==miyata.melt$AA_Change[i]){
-      miyata.melt$Frequency[i] <- sum(McLachlan.matrix[which(rownames(McLachlan.matrix)==miyata.melt$AA_Ref[i]),which(colnames(McLachlan.matrix)==miyata.melt$AA_Change[i])],McLachlan.matrix[which(rownames(McLachlan.matrix)==miyata.melt$AA_Change[i]),which(colnames(McLachlan.matrix)==miyata.melt$AA_Ref[i])],na.rm = T)/2
-    }else{
-      miyata.melt$Frequency[i] <- sum(McLachlan.matrix[which(rownames(McLachlan.matrix)==miyata.melt$AA_Ref[i]),which(colnames(McLachlan.matrix)==miyata.melt$AA_Change[i])],McLachlan.matrix[which(rownames(McLachlan.matrix)==miyata.melt$AA_Change[i]),which(colnames(McLachlan.matrix)==miyata.melt$AA_Ref[i])],na.rm = T)  
-    }
-    
-  }
-  print(i/nrow(miyata.melt))
-}
+
+# takes a while, so saved output: 
+load("miyata_melt_initialized.Rdata")
+# for(i in 1:nrow(miyata.melt)){
+#   
+#   if(miyata.melt$Tumor_type[i] != "Between species"){
+#     miyata.melt$Frequency[i] <- sum(combined_all_data$freq[which(combined_all_data$tumor_type==miyata.melt$Tumor_type[i] & 
+#                                                                    combined_all_data$AA_Ref== translations$AA_letter[which(translations$AA_short== miyata.melt$AA_Ref[i])[1]] & 
+#                                                                    combined_all_data$AA_Change== translations$AA_letter[which(translations$AA_short== miyata.melt$AA_Change[i])[1]])],combined_all_data$freq[which(combined_all_data$tumor_type==miyata.melt$Tumor_type[i] & 
+#                                                                                                                                                                                                                      combined_all_data$AA_Ref== translations$AA_letter[which(translations$AA_short== miyata.melt$AA_Change[i])[1]] & 
+#                                                                                                                                                                                                                      combined_all_data$AA_Change== translations$AA_letter[which(translations$AA_short== miyata.melt$AA_Ref[i])[1]])])
+#   }else{
+#     if(miyata.melt$AA_Ref[i]==miyata.melt$AA_Change[i]){
+#       miyata.melt$Frequency[i] <- sum(McLachlan.matrix[which(rownames(McLachlan.matrix)==miyata.melt$AA_Ref[i]),which(colnames(McLachlan.matrix)==miyata.melt$AA_Change[i])],McLachlan.matrix[which(rownames(McLachlan.matrix)==miyata.melt$AA_Change[i]),which(colnames(McLachlan.matrix)==miyata.melt$AA_Ref[i])],na.rm = T)/2
+#     }else{
+#       miyata.melt$Frequency[i] <- sum(McLachlan.matrix[which(rownames(McLachlan.matrix)==miyata.melt$AA_Ref[i]),which(colnames(McLachlan.matrix)==miyata.melt$AA_Change[i])],McLachlan.matrix[which(rownames(McLachlan.matrix)==miyata.melt$AA_Change[i]),which(colnames(McLachlan.matrix)==miyata.melt$AA_Ref[i])],na.rm = T)  
+#     }
+#     
+#   }
+#   print(i/nrow(miyata.melt))
+# }
 
 
-tail(miyata.melt)
+# tail(miyata.melt)
 
 
 miyata.melt$proportion_observed <- NA
@@ -188,7 +191,7 @@ miyata.melt$relative_freq <- miyata.melt$proportion_observed/miyata.melt$Potenti
 
 McLachlan.matrix.diag <- McLachlan.matrix[lower.tri(McLachlan.matrix,diag=F)]
 
-sum(McLachlan.matrix.diag,na.rm = T)*2 
+sum(McLachlan.matrix.diag,na.rm = T)*2
 
 positions_i <- c(394,321,250,115,154,53,159,353,493,203,502,370,89,122,173,382,218,255,282,304)
 McLachlan.ni <- c(394,321,250,115,154,53,159,353,493,203,502,370,89,122,173,382,218,255,282,304)
@@ -206,7 +209,7 @@ McLachlan.alpha <- (sum(McLachlan.matrix.diag,na.rm = T)*2)/(sum(multiplied.mat[
 # Example for LEU and ILE
 72/(321*250* McLachlan.alpha)
 
-miyata.melt[which(miyata.melt$AA_Ref=="LEU" & miyata.melt$AA_Change=="ILE" & miyata.melt$Tumor_type=="Between species"),] 
+
 
 
 
@@ -238,6 +241,7 @@ N1.vec <- rep(NA,length(unique(combined_all_data$tumor_type))+1)
 
 # dimnames(tally_array)[[4]]
 
+# fill in the tally array with frequency data from the tumor types
 for(i in 1:length(unique(miyata.melt$Tumor_type))){
   this.miyata <- miyata.melt[which(miyata.melt$Tumor_type==unique(miyata.melt$Tumor_type)[i]),]
   for(j in 1:nrow(this.miyata)){
@@ -246,7 +250,7 @@ for(i in 1:length(unique(miyata.melt$Tumor_type))){
   }
 }
 
-
+# calculating alpha
 for(i in 1:length(unique(miyata.melt$Tumor_type))){
   if(i < 24){
     this.diag <- tally_array[,,i,1][upper.tri(tally_array[,,i,1],diag=F)]
@@ -261,7 +265,7 @@ for(i in 1:length(unique(miyata.melt$Tumor_type))){
 N1.vec[24] <- 9438
 
 alpha.vec <- N1.vec/N2.vec
-
+# filling in the relative frequency 
 for(z in 1:23){
   for(i in 1:20){
     for(j in 1:20){
@@ -281,7 +285,7 @@ tally_array[,,1,2]
 
 mean(tally_array[,,1,2][upper.tri(tally_array[,,1,2],diag = F)],na.rm=T)
 
-
+# filling this relative frequency back into the miyata.melt dataframe 
 miyata.melt$McLachlan_rel_freq <- NA
 
 for(i in 1:nrow(miyata.melt)){
@@ -294,24 +298,12 @@ miyata.melt$McLachlan_rel_freq[which(miyata.melt$Tumor_type=="Between species" &
 
 
 ###
-# trinucs but normalizing with out normalizing the rates ---- 
+# normalizing by trinucleotide rates per tumor ----- 
 ###
 
 
 
-load("combined_selection_output_full_data.RData")
 
-combined_full_data.AA <- combined_full_data[-which(is.na(combined_full_data$Nucleotide_trinuc_context)),]
-
-
-colnames(combined_full_data.AA)
-
-combined_full_data.AA$this_trinuc <- NA
-combined_full_data.AA$trinuc_upstream <- NA
-combined_full_data.AA$trinuc_center <- NA
-combined_full_data.AA$trinuc_downstream <- NA
-
-table(combined_full_data.AA$trinucs)
 
 # flips the nucleotide to the other strand
 
@@ -398,7 +390,8 @@ rownames(translations) <- translations[,"Nucs"]
 # load in trinucleotide contexts
 
 for(tumor in 1:length(tumor.list)){
-  load(paste("trinuc_signature_data/trinuc_data_",tumor.list[tumor],".RData",sep="")) 
+  load(paste("trinuc_signature_data/trinuc_data_",tumor.list[tumor],".RData",sep=""))
+  # load(paste("~/Documents/Selection_analysis/",tumor.list[tumor],"/trinuc_output/trinuc_data_",tumor.list[tumor],".RData",sep=""))
   
   for(codon in 1:nrow(translations)){
     this.position.list <- which(trinuc.mutation.df$codon_1==translations[codon,"Nucs"] & trinuc.mutation.df$tumor_type==tumor.list[tumor])
@@ -500,7 +493,7 @@ for(i in 1:length(tumor.list)){
 tail(miyata.melt)
 
 
-miyata.melt
+# miyata.melt
 
 miyata.melt$trinuc_normalized <- miyata.melt$proportion_observed/miyata.melt$trinuc_rate_prop
 
@@ -527,9 +520,11 @@ miyata.melt$Tumor_type <- factor(miyata.melt$Tumor_type,levels = c(as.character(
                                                                                                                                           as.character(max.trinuc_norm$Tumor_type)[21:23],"Between~species"))
 
 frequency.plot_trinuc <- ggplot(data = subset(miyata.melt, Frequency>0), aes(x=Distance, y= trinuc_normalized)) + geom_point(alpha=0.8,size=.5) + geom_smooth(method="glm",method.args=list(family=gaussian(link="log")),se = F) + facet_wrap(~Tumor_type, scales = "free", ncol=4, labeller = "label_parsed") + labs(y="Normalized frequency",x="Molecular distance") + theme_classic() 
-
+frequency.plot_trinuc
 ggsave(filename = "normalized_freq_vs_distace_trinuc.png",plot = frequency.plot_trinuc,height = 8,width = 6)
 
+
+# density plots ------
 
 
 combined_all_data$synonymous <-  combined_all_data$AA_Ref==combined_all_data$AA_Change
